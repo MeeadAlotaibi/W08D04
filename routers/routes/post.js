@@ -12,9 +12,9 @@ const authentication = require("../middlewares/authentication");
 
 //////////////////////////////////////////////
 
-postRouter.post("/task", authentication, createNewPost);
-postRouter.get("/tasks", authentication, getPosts);
-postRouter.delete("/task/:id", authentication, deletePost);
+postRouter.post("/post", authentication, createNewPost);
+postRouter.get("/posts", authentication, getPosts);
+postRouter.delete("/post/:id", authentication, deletePost);
 // postRouter.put("/task/:id", authentication, updateTask);
 // postRouter.get("/task/:id", authentication, getTaskById);
 
