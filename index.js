@@ -18,11 +18,10 @@ app.use(roleRouter);
 const userRouter = require("./routers/routes/user");
 app.use(userRouter);
 
-
 ////////// For Tasks ////////
-const taskRouter = require("./routers/routes/post");
-app.use(taskRouter);
 
+const postRouter = require("./routers/routes/post");
+app.use(postRouter);
 
 ////////////////////////////////////////////////////////////////////
 const PORT = process.env.PORT;

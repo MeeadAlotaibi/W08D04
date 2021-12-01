@@ -3,18 +3,22 @@ const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+
 ///////////// signUp /////////////////
 
 const signup = async (req, res) => {
-  const { email, password, role } = req.body; // ياخذ من البدي ايميل و باسوورد و رول اللي نوع المستخدم ،، ادمن او يوزر عادي
+  const {email, userName ,  password , avatar,  role} = req.body; // ياخذ من البدي ايميل و باسوورد و رول اللي نوع المستخدم ،، ادمن او يوزر عادي
 
   const savedEmail = email.toLowerCase(); // يحول الايميل اللي كتبته في البودي الى احرف صغيرة
 
   const hashedPassword = await bcrypt.hash(password, Number(process.env.SALT)); //يعمل تشفير للبيانات // ويحول سولت الى رقم ، لان اتوقع انها تجي كـ نص ،، مو متاكدة 
 
-  const newUser = new userModel({ // يخزن القيّم المشفرة
+  const newUser = new userModel({
+    // يخزن القيّم المشفرة
     email: savedEmail,
     password: hashedPassword,
+    userName: userName,
+    avatar: avatar,
     role,
   });
 

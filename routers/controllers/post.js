@@ -1,62 +1,76 @@
-// const taskModel = require("./../../db/models/task");
+const postModel = require("./../../db/models/post");
 
-// /////////////// Create New Task ///////////////////////////
+/////////////// Create New Post ///////////////////////////
 
-// const createTask = (req, res) => {
-//   const newTask = new taskModel({ name: req.body.name, user: req.token.id }); // ما راح يقدر ينشئ تاسك جديد الا اذا كان مسجل دخول و عنده توكن 
-//   newTask
-//     .save()
-//     .then((result) => {
-//       res.status(201).json(result);
-//     })
-//     .catch((err) => {
-//       res.status(400).json(err);
-//     });
-// };
+const createNewPost = (req, res) => {
+  const newPost = new postModel({ img ,description , isDel , user: req.token.id }); // ما راح يقدر ينشئ تاسك جديد الا اذا كان مسجل دخول و عنده توكن 
+  newPost
+    .save()
+    .then((result) => {
+      res.status(201).json(result);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+}; // Done
 
-// /////////// Get All the  Tasks That  aren't Deleted /////////
+/////////////// Get All the  Posts  ////////////////////////
 
-// const getTasks = (req, res) => {
-//   taskModel
-//     .find({ isDeleted: false, user: req.token.id }) // اوجد جميع التاسكات الغير محذوفه ولااازم تكون مستخدم عنده توكن ،، يعني عامل تسجيل تدخول
-//     .then((result) => {
-//       res.status(200).json(result); // رجع لي النتيجة
-//     })
-//     .catch((err) => {
-//       res.status(400).json(err);
-//     });
-// };
+const getPosts = (req, res) => {
+  postModel
+  .find({}) //اووجد الجميييع 
+    .then((result) => {
+      if (result) { // اذا كان فيه نتيجة ؟
+        res.status(200).json(result); // رجعها لي 
+      } else {
+        res.status(404).json("There is no posts");
+     }   
+ }).catch((err) => {
+      res.status(400).json(err);
+    });
+}; //Done
 
-// ///////////////// Delete Task ////////////////////////////
+///////////////// Delete Post ////////////////////////////
 
-// const deleteTask = (req, res) => {
-//   const id = req.params.id; // احذف تاسك  بالآيدي عن طريق البرامز 
-//   taskModel
-//     .findByIdAndUpdate(id, { // فـ اخذنا الآي دي تبع التاسك 
-//       $set: {
-//         isDeleted: true, // وحولته الى ترو 
-//       },
-//     })
-//     .then((result) => { 
-//       if (result) {
-//         res.status(200).json("Task is deleted"); // اذا فيه نتيجة اطبع لي
-//       } else {
-//         res.status(404).json("user does not exist"); // اذا مافيه نتيجة اطبع لي
-//       }
-//     })
-//     .catch((err) => {
-//       res.status(400).json(err);
-//     });
-// };
+const deletePost = async (req, res) => {
+  const id = req.params.id; // احذف تاسك  بالآيدي عن طريق البرامز
+  let user = false;
 
-// ////////////// Update Task ////////////////////////
+  await postModel
+    .findOne({ _id: id, user: req.token.id }) 
+    .then((result) => {
+      if (result) {
+        user = true;   
+      }
+    }); 
+      const result = await postModel.findById(req.token.role);
+      if (result.role == "admin" || user) { //هنا نشيّك اذا اليوزر ادمن او لا 
+        postModel
+          .findByIdAndUpdate(id, { $set: { isDel : true } })
+          .then((result) => {
+            if (result) {
+              res.status(200).json("post removed");
+            } else {
+              res.status(404).json("post does not exist");
+            }
+          })
+          .catch((err) => {
+            res.status(400).json(err);
+          });
+      } else {
+        res.json("you don't have the Authorization to delete the post");
+      }
 
-// const updateTask = (req, res) => {
+};  // Done
+
+////////////// Update Task ////////////////////////
+
+// const updatePost = (req, res) => {
 //     //ناخذ اسم التاسك و ازديليت من البدي 
 //   const name = req.body.name;
 //   const isDeleted = req.body.isDeleted; //  :) ابغى اسوي ابديت على الديليت ايضا 
 //   const id = req.params.id; // ناخذ الايدي تبع التاسك من البرامز
-//   taskModel
+//   postModel
 //     .findByIdAndUpdate(id, {
 //       $set: {
 //         name: name, //  غير لي على اسم التاسك بالاسم اللي حطيته في البدي //
@@ -73,24 +87,32 @@
 //     .catch((err) => {
 //       res.status(400).json(err);
 //     });
-// };
-// /////////////// Get Task By Id ///////////////////////
+// }; // I'm Not Finish Yet :(
 
-// const getTaskById = (req, res) => {
-//   const { id } = req.params; // اجيب كل التاسكات  بالآيدي عن طريق البرامز
-//   taskModel
-//     .find({ _id: id, user: req.token.id }) //// لاااااااازم تكون مستخدم و عندك توكن يعني مسجل دخول 
-//     .then((result) => {
-//       if (result) {
-//         res.status(200).json(result);
-//       } else {
-//         res.status(404).json("Task does not exist");
-//       }
-//     })
-//     .catch((err) => {
-//       res.status(400).json(err);
-//     });
-// };
 
-// ////////////تصدير الفنكشنز ///////////
-// module.exports = { createTask, getTasks, deleteTask, updateTask, getTaskById };
+/////////////// Get Post By Id ///////////////////////
+
+const getPostById = (req, res) => {
+  const { id } = req.params; // اجيب كل التاسكات  بالآيدي عن طريق البرامز
+  postModel
+    .find({ _id: id }) 
+    .then((result) => {
+      if (result) {
+        res.status(200).json(result);
+      } else {
+        res.status(404).json("Post does not exist");
+      }
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+}; /// Done 
+
+////////////تصدير الفنكشنز ///////////
+module.exports = {
+  createNewPost,
+  getPosts,
+  deletePost,
+  // updatePost,
+  getPostById,
+};
