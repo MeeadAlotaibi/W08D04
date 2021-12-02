@@ -8,10 +8,11 @@ const options = {
 
 //////////////////
 
-mongoose.connect(process.env.DB, options, () => {
-  try {
+mongoose
+  .connect(process.env.DB, options)
+  .then(() => {
     console.log("DB READY TO USE");
-  } catch (error) {
-    console.error(error);
-  }
-});
+  })
+  .catch((err) => {
+    console.log(err);
+  });

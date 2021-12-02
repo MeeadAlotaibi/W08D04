@@ -7,6 +7,7 @@ const create = (req, res) => {
     role, //// النوع 
     permission, /// الصلاحيات 
   });
+  console.log(newRole)
 
   newRole // المتغير اللي خزن فيه القيم الجديدة
     .save() // نحفظ
@@ -14,6 +15,7 @@ const create = (req, res) => {
       res.status(201).send(result);
     })
     .catch((err) => {
+      console.log(err)
       res.status(400).send(err);
     });
 };
@@ -31,3 +33,6 @@ const roles = (req, res) => {
 };
 ///////////////////////////////////////////////
 module.exports = { create, roles };
+
+
+// خلصتهم
