@@ -131,4 +131,3 @@ const deleteUser = (req, res) => {
 
 module.exports = { signup, signin, getAllUsers, deleteUser };
 
-///خلصتهم
