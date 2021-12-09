@@ -12,7 +12,7 @@ const authorization = require("../middlewares/authorization");
 
 const userRouter = express.Router();
 
-userRouter.get("/users", authentication, authorization, getAllUsers);
+userRouter.get("/users", getAllUsers);
 userRouter.post("/signup", signup);
 userRouter.post("/signin", signin);
 userRouter.delete("/users/:id", authentication, authorization, deleteUser);
