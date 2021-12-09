@@ -44,4 +44,4 @@ npm i jsonwebtoken
   to save our data
   
   ### UML Digram
-  [https://github.com/MeeadAlotaibi/W08D04/blob/main/UML-SOCIAL-MEDIA.drawio.png]
+ ![Untitled Workspace (3)] [https://github.com/MeeadAlotaibi/W08D04/blob/main/UML-SOCIAL-MEDIA.drawio.png]
