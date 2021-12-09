@@ -42,3 +42,6 @@ npm i jsonwebtoken
 
 - Mongoose
   to save our data
+  
+  ### UML Digram
+  [https://github.com/MeeadAlotaibi/W08D04/blob/main/UML-SOCIAL-MEDIA.drawio.png]
