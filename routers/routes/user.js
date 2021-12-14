@@ -20,8 +20,8 @@ const check = require("./../middlewares/check");
 const userRouter = express.Router();
 
 userRouter.get("/users", authentication, authorization, getAllUsers);
-userRouter.post("/signup", check , signup);
-userRouter.post("/activateAccount", activateUser);
+userRouter.post("/signup", check, signup);
+userRouter.get("/auth/:token", activateUser);
 userRouter.put("/forgotPassword", forgetPassword);
 userRouter.put("/resetPassword", newPassword);
 userRouter.post("/signin", signin);

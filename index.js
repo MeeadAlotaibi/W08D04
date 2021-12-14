@@ -23,6 +23,9 @@ app.use(userRouter);
 const postRouter = require("./routers/routes/post");
 app.use(postRouter);
 
+const likesRouter = require("./routers/routes/like");
+app.use("/likes", likesRouter);
+
 ////////////////////////////////////////////////////////////////////
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

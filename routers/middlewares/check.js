@@ -1,7 +1,7 @@
 const userModel = require("./../../db/models/user");
 
 const checkinfo = (req, res, next) => {
-  const { email, username, password } = req.body;
+  const { email, userName, password } = req.body;
 
   const regexPassword = /^(?=(.*\d){2})(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{8,}$/;
   const regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -17,11 +17,11 @@ const checkinfo = (req, res, next) => {
     return;
   }
 // يشيك ع اسم المستخدم 
-  const savedUsername = username.toLowerCase();
+  const savedUsername = userName;
 
   userModel
     .findOne({
-      username: savedUsername, // يشيك ع اسم المستخدم اذا هو نفس المجود مسبقا او لا
+      userName: savedUsername, // يشيك ع اسم المستخدم اذا هو نفس المجود مسبقا او لا
     })
     .exec((err, user) => {
       if (err) {
@@ -30,14 +30,12 @@ const checkinfo = (req, res, next) => {
       }
 
       if (user) {
-        res
-          .status(400)
-          .send({ message: "Username is already in use!" });
+        res.status(400).send({ message: "Username is already in use!" });
         return;
       }
 
       //يشيك ع الايميل
-      const savedEmail = email.toLowerCase();
+      const savedEmail = email;
       userModel
         .findOne({
           email: savedEmail, // يشيك ع الايميل اذا هو نفس المجود مسبقا او لا
@@ -49,9 +47,7 @@ const checkinfo = (req, res, next) => {
           }
 
           if (user) {
-            res
-              .status(400)
-              .json({ message: "Email is already in use!" });
+            res.status(400).json({ message: "Email is already in use!" });
             return;
           }
 

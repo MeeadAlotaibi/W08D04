@@ -5,16 +5,19 @@ const likeModel = require("./../../db/models/like");
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 require("dotenv").config();
-const mailgun = require("mailgun-js");
-const DOMAIN = "sandbox093b95b4aa3d4d5abdba1595e7d10442.mailgun.org";
-const mg = mailgun({ apiKey: process.env.api_key, domain: DOMAIN });
+const Mailgun = require("mailgun.js");
+const formData = require("form-data");
+const mailgun = new Mailgun(formData);
+const DOMAIN = "sandbox7b8b0fe641c04d0a8cac69ac49c77f7a.mailgun.org";
+const public_key = process.env.PUBLIC_KEY;
+const secret = process.env.secretKey;
+const mg = mailgun.client({ username: DOMAIN, key: public_key });
 //////////////////////////// signUp //////////////////////////////
 
 const signup = async (req, res) => {
   const { email, userName, password, avatar, role } = req.body; // ياخذ من البدي ايميل و باسوورد و رول اللي نوع المستخدم ،، ادمن او يوزر عادي
-
-  const savedEmail = email.toLowerCase(); // يحول الايميل اللي كتبته في البودي الى احرف صغيرة
-  const savedUseNname = userName.toLowerCase();
+  const savedEmail = email; // يحول الايميل اللي كتبته في البودي الى احرف صغيرة
+  const savedUseNname = userName;
   const hashedPassword = await bcrypt.hash(password, Number(process.env.SALT)); //يعمل تشفير للبيانات // ويحول سولت الى رقم ، لان اتوقع انها تجي كـ نص ،، مو متاكدة
 
   const payload = {
@@ -24,36 +27,44 @@ const signup = async (req, res) => {
     avatar,
     role,
   };
+  console.log(payload);
   const options = { expiresIn: "1h" };
   const token = await jwt.sign(payload, secret, options);
   const data = {
-    from: "norelay@myFirstEmail.com",
+    from: "norelay@mmyFirstEmail.com",
     to: savedEmail,
-    subject: `Hi ${savedUsername}, please verify your account`,
+    subject: `Hi ${savedUseNname}, please verify your account`,
     html: `<h1>Account Verification</h1>
     <a href="${process.env.URL}/auth/${token}">Verify your email address</a>
     `,
   };
-  mg.messages().send(data, (error) => {
-    if (error) {
-      res.status(400).send(error);
-    } else {
-      res.status(200).send("Email have been sent");
-    }
-  });
-
-   
+  mg.messages
+    .create(DOMAIN, data)
+    .then((msg) => {
+      console.log(msg);
+      res.json(msg)
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  // .send(data, (error) => {
+  //   if (error) {
+  //     res.status(400).send(error);
+  //   } else {
+  //     res.status(200).send("Email have been sent");
+  //   }
+  // });
 }; //Done
 
 ///////////////////////// activate user  //////////////////////////////
-const activateUser  = (req, res) => {
-  const { token } = req.body;
+const activateUser = (req, res) => {
+  const { token } = req.params;
   if (token) {
     jwt.verify(token, secret, (err, decodedToken) => {
       if (err) {
         res.status(400).send("Incorrect or expired link");
       } else {
-        const { email, username, password } = decodedToken;
+        const { email, userName, password } = decodedToken;
         userModel
           .findOne({ email })
           .then((result) => {
@@ -62,7 +73,7 @@ const activateUser  = (req, res) => {
             } else {
               const newUser = new userModel({
                 email,
-                username,
+                userName,
                 password,
                 avatar,
                 role,
@@ -76,7 +87,8 @@ const activateUser  = (req, res) => {
                   res.status(400).send(err);
                 });
             }
-          }).catch((err) => {
+          })
+          .catch((err) => {
             res.status(400).send(err);
           });
       }
@@ -130,7 +142,6 @@ const forgetPassword = (req, res) => {
     });
 }; //Done
 
-
 ///////////////////////// Password Reset Again //////////////////////////////
 const newPassword = async (req, res) => {
   const { resetLink, newPass } = req.body;
@@ -171,36 +182,37 @@ const newPassword = async (req, res) => {
 
 ///////////////////////// signin //////////////////////////////
 const signin = (req, res) => {
-  const { email, username, password } = req.body; // ياخذ من البدي ايميل و باسوورد
+  const { email, userName, password } = req.body; // ياخذ من البدي ايميل و باسوورد
   const savedEmail = email?.toLowerCase();
-  const savedUsername = username?.toLowerCase();
-
+  const savedUsername = userName?.toLowerCase();
 
   userModel
     .findOne({
-      $or: [{ email: savedEmail }, { userName: savedUsername }],
+      $or: [{ email }, { userName }],
     })
     .then(async (result) => {
       // النتيجة تحتاج وقت
       if (result) {
-        if (result.email == savedEmail || result.userName == savedUsername) {
-          const checkedPassword = await bcrypt.compare(
-            password,
-            result.password
-          ); // هنا كومبير يفك التشفير و يقارن بين الباسوود المشفرة و الباسوورد الاصليه
-          if (checkedPassword) {
-            const payload = {
-              role: result.role,
-              id: result._id,
-              isDel: result.isDel,
-            };
-            const options = { expiresIn: "60m" }; // اعطي للتوكن عمر افتراضي ٦٠ دقيقة ،، واقدر احط المده اللي ابغاها لكن يفضل ما تكون مده طويلة عشان الحماية
-            const secret = process.env.secretKey;
-            const token = await jwt.sign(payload, secret, options);
-            res.status(200).send({ result, token });
-          } else {
-            res.status(404).send("Invalid email or password");
-          }
+        if (result.email == email || result.userName == userName) {
+          console.log(result, "hhhhhh");
+          // const checkedPassword = await bcrypt.compare(
+          //   password,
+          //   result.password
+          // ); // هنا كومبير يفك التشفير و يقارن بين الباسوود المشفرة و الباسوورد الاصليه
+          // if (checkedPassword) {
+          const payload = {
+            role: result.role,
+            id: result._id,
+            isDel: result.isDel,
+          };
+          const options = { expiresIn: "60m" }; // اعطي للتوكن عمر افتراضي ٦٠ دقيقة ،، واقدر احط المده اللي ابغاها لكن يفضل ما تكون مده طويلة عشان الحماية
+          const secret = process.env.secretKey;
+          const token = await jwt.sign(payload, secret, options);
+
+          res.status(200).send({ result, token });
+          // } else {
+          //   res.status(404).send("Invalid email or password");
+          // }
         } else {
           res.status(404).send("Invalid email or password");
         }
@@ -261,7 +273,7 @@ const deleteUser = (req, res) => {
       res.status(400).send(err);
     });
 }; //Done
-/////////////////////////////////////////////////////////////////
+/////////////////////// signinWithGoogle //////////////////////////////////////////
 const signinWithGoogle = (req, res) => {
   const { token } = req.body;
 
@@ -323,5 +335,13 @@ const signinWithGoogle = (req, res) => {
 
 //////////////// تصدير الفنكشنز ///////////////////////////////
 
-module.exports = { signup, signin, getAllUsers, deleteUser ,activateUser , forgetPassword ,newPassword , signinWithGoogle};
-
+module.exports = {
+  signup,
+  signin,
+  getAllUsers,
+  deleteUser,
+  activateUser,
+  forgetPassword,
+  newPassword,
+  signinWithGoogle,
+};

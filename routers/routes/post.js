@@ -22,7 +22,9 @@ postRouter.get("/", authentication, exist, getAllPosts);
 postRouter.get("/getposts", authentication, exist, authorization, postOfUser);
 postRouter.get("/getpost/:id", authentication, exist, getPostById);
 postRouter.put("/updatepost/:id", authentication, exist, updatePost);
-postRouter.delete("/deletePost/:id", authentication, exist, deletePost);
+postRouter.delete("/deletePost/:id", authentication, deletePost);
+// postRouter.delete(
+//   "/adminDeletePost/:id", authentication, authorization, adminDeletePost);
 postRouter.post("/like/:postId", authentication, likeOfPost);
 
 

@@ -3,8 +3,8 @@ const postModel = require("./../../db/models/post");
 /////////////// Create New Post ///////////////////////////
 
 const createNewPost = (req, res) => {
-  const { img, desc } = req.body;
-  const newPost = new postModel({ img, desc, user: req.token.id });
+  const { desc } = req.body;
+  const newPost = new postModel({ desc, user: req.token.id });
   newPost
     .save()
     .then((result) => {
@@ -20,6 +20,7 @@ const createNewPost = (req, res) => {
 const getAllPosts = (req, res) => {
   postModel
     .find({ isDel: false })
+    .populate("user")
     .then((result) => {
       if (result.length > 0) {
         res.status(201).send(result);
@@ -66,7 +67,7 @@ const getPostById = (req, res) => {
     .catch((err) => {
       res.status(400).send(err);
     });
-}; /// خلصتها 
+}; /// خلصتها
 
 ///////////// Update Task ////////////////////////
 
@@ -115,25 +116,23 @@ const deletePost = async (req, res) => {
     .catch((err) => {
       res.status(400).send(err);
     });
-
-
-};  // خلصتها
-
+}; // خلصتها
 
 /////////////////// Like for Post  //////////////////////
 
 const likeOfPost = (req, res) => {
   const postId = req.params.postId;
 
-   likeModel
+  likeModel
     .findOne({ post: postId, user: req.token.id })
     .then((ruselt) => {
       if (ruselt) {
         likeModel
           .findOneAndUpdate(
             { post: postId, user: req.token.id },
-            { isLiked: !ruselt.isLiked  }
-          ).then((updateResult) => {
+            { isLiked: !ruselt.isLiked }
+          )
+          .then((updateResult) => {
             res.status(201).send(updateResult);
           })
           .catch((err) => {
@@ -158,8 +157,7 @@ const likeOfPost = (req, res) => {
     .catch((err) => {
       res.status(400).send(err);
     });
-};/// خلصتها 
-
+}; /// خلصتها
 
 ////////////تصدير الفنكشنز ///////////
 module.exports = {
