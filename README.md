@@ -43,7 +43,8 @@ npm i jsonwebtoken
 - Mongoose
   to save our data
   
-  ### UML Digram ![UML-SOCIAL-MEDIA drawio](https://user-images.githubusercontent.com/92248111/145357946-b4c40e8f-7e68-4ded-a527-15a7dd810d83.png)
+  ### UML Digram ![SocialMedia-Page-3 drawio](https://user-images.githubusercontent.com/92248111/146553115-0aeb2042-a574-4ba5-9ced-8f551bcee07c.png)
+
 
   ---
   
