@@ -48,3 +48,5 @@ npm i jsonwebtoken
   
   
   
+### ER Diagram
+![SocialMedia-Page-2 drawio](https://user-images.githubusercontent.com/92248111/146543499-56665300-cf61-4c5e-a9ad-b3e175730b31.png)
